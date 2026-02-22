@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "ohlcv-hub"
+version = "0.1.0"
+description = "Async Python library for fetching OHLCV market data from multiple free providers"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "FaustoS88" }]
+keywords = ["ohlcv", "market-data", "trading", "finance", "binance", "yfinance", "tiingo", "finnhub"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+    "aiohttp>=3.9",
+    "yfinance>=0.2",
+]
+
+[project.optional-dependencies]
+tiingo = ["requests>=2.31"]
+finnhub = ["finnhub-python>=2.4"]
+cli = ["click>=8.1"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.4", "respx>=0.21"]
+
+[project.scripts]
+ohlcv = "ohlcv_hub.cli:main"
+
+[project.urls]
+Repository = "https://github.com/FaustoS88/ohlcv-hub"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

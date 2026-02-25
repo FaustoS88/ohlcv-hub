@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "ohlcv-hub"
@@ -28,7 +28,7 @@ dependencies = [
 tiingo = ["requests>=2.31"]
 finnhub = ["finnhub-python>=2.4"]
 cli = ["click>=8.1"]
-dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.4", "respx>=0.21"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.4", "aioresponses>=0.7"]
 
 [project.scripts]
 ohlcv = "ohlcv_hub.cli:main"

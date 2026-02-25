@@ -42,24 +42,50 @@ def _get_yfinance() -> OHLCVProvider:
     return _yfinance
 
 
+def _get_tiingo() -> OHLCVProvider:
+    global _tiingo
+    if _tiingo is None:
+        from ohlcv_hub.providers.tiingo import TiingoProvider  # noqa: PLC0415
+        _tiingo = TiingoProvider()
+    return _tiingo
+
+
+def _get_finnhub() -> OHLCVProvider:
+    global _finnhub
+    if _finnhub is None:
+        from ohlcv_hub.providers.finnhub import FinnhubProvider  # noqa: PLC0415
+        _finnhub = FinnhubProvider()
+    return _finnhub
+
+
 def pick(symbol: str) -> list[OHLCVProvider]:
-    """Return an ordered provider chain for *symbol*."""
+    """Return an ordered provider chain for *symbol*.
+
+    Routing rules:
+    - Crypto  → Binance (primary), yfinance (fallback)
+    - Stocks  → yfinance (primary), Tiingo (fallback daily/weekly only),
+                Finnhub (fallback for intraday)
+    - Intl    → yfinance (primary), Finnhub (fallback)
+    - Forex   → yfinance (primary), Finnhub (fallback)
+    - Unknown → all providers
+    """
     up = symbol.upper()
 
     if _CRYPTO_RE.match(up):
         return [_get_binance(), _get_yfinance()]
 
     if _STOCK_RE.match(up):
-        return [_get_yfinance()]
+        # Tiingo covers daily/weekly; Finnhub covers intraday — both tried as fallbacks
+        return [_get_yfinance(), _get_tiingo(), _get_finnhub()]
 
     if _INTL_STOCK_RE.match(up):
-        return [_get_yfinance()]
+        return [_get_yfinance(), _get_finnhub()]
 
     if _FOREX_RE.match(up):
-        return [_get_yfinance()]
+        return [_get_yfinance(), _get_finnhub()]
 
     # Unknown — try all
-    return [_get_binance(), _get_yfinance()]
+    return [_get_binance(), _get_yfinance(), _get_tiingo(), _get_finnhub()]
 
 
 async def fetch(
